@@ -37,5 +37,8 @@ class PersonDTO:
     tags: Optional[List[str]]
     riskLevel: RiskLevel
     metadata: Dict[str, Any] = field(default_factory=dict)
-    embeddings: List[FaceEmbeddingDTO] = field(default_factory=list)
+    #embeddings: List[FaceEmbeddingDTO] = field(default_factory=list)
+    embeddings: Dict[str, List[FaceEmbeddingDTO]] = field(
+        default_factory=lambda: {"manual": [], "auto": []}
+    )
     createdAt: datetime.datetime = field(default_factory=lambda: datetime.datetime.utcnow())

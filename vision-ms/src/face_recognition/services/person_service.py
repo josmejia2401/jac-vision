@@ -59,6 +59,38 @@ class PersonService:
 
         return await self._repo.add_embedding(person_id, embedding)
 
+    def pose_bucket(self, pose: dict) -> str:
+        if not pose:
+            return "UNKNOWN"
+
+        yaw = pose.get("yaw")
+        if yaw is None:
+            return "UNKNOWN"
+
+        try:
+            yaw = float(yaw)
+        except Exception:
+            return "UNKNOWN"
+        
+        # =======================
+        # Umbrales recomendados
+        # =======================
+        # > 40° -> PERFIL
+        # 20°–40° -> SEMIPERFIL
+        # -20° – 20° -> FRONTAL
+        # < -40° -> PERFIL izquierdo
+        # =======================
+        if yaw > 40:
+            return "PROFILE_RIGHT"
+        elif 20 < yaw <= 40:
+            return "HALF_RIGHT"
+        elif -20 <= yaw <= 20:
+            return "FRONTAL"
+        elif -40 <= yaw < -20:
+            return "HALF_LEFT"
+        else:
+            return "PROFILE_LEFT"
+        
     async def add_embeddings_from_bytes(self, person_id: int, file_bytes: bytes):
         logger.info("Procesando imagen para embeddings de persona ID=%s", person_id)
         # Verificar existencia de persona
@@ -86,13 +118,14 @@ class PersonService:
         embeddings = []
         for face in faces:
             emb = FaceEmbeddingDTO(
-                embedding=face["embedding"],
+                embedding=face.embedding,
                 source=FaceSource.MANUAL_UPLOAD,
                 cameraId=None,
                 createdAt=now,
-                qualityScore=face.get("score", 0.0),
-                thumbnail=face.get("thumbnail"),
-                metadata={}
+                qualityScore=face.score,
+                thumbnail=face.thumbnail,
+                pose=face.pose,
+                metadata={"poseBucket": self.pose_bucket(face.pose)},
             )
             embeddings.append(emb)
 

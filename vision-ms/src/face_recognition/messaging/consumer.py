@@ -10,7 +10,7 @@ from typing import Optional, Dict
 import datetime
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from ..dto.person_dto import PersonDTO, FaceEmbeddingDTO
+from ..dto.person_dto import PersonDTO, FaceEmbeddingDTO, FaceExtractedDTO
 from ...helpers.utils.enums import FaceSource, RiskLevel
 from ..recognition.face_engine import FaceEngine
 from ..services.person_service import PersonService
@@ -123,17 +123,20 @@ class RabbitConsumer(threading.Thread):
             return
 
         persons: list[PersonDTO] = await self._person_service.list_by_user(user_id)
+        logger.info(f"Personas a cargar ${len(persons)}")
         self.embedding_index[user_id] = {}
 
         for p in persons:
             # Lista de vectores numpy normalizados
             emb_vecs = []
             for e in p.embeddings:
-                v = np.asarray(e.embedding, dtype=np.float32)
-                n = np.linalg.norm(v)
-                if n > 0:
-                    v = v / n
-                    emb_vecs.append(v)
+                for group in p.embeddings.values():     # manual y auto
+                    for e in group:
+                        v = np.asarray(e.embedding, dtype=np.float32)
+                        n = np.linalg.norm(v)
+                        if n > 0:
+                            v = v / n
+                            emb_vecs.append(v)
 
             if not emb_vecs:
                 continue
@@ -170,6 +173,9 @@ class RabbitConsumer(threading.Thread):
         })
 
         entry["embeddings"].append(emb)
+        if len(entry["embeddings"]) > 50:
+            entry["embeddings"] = entry["embeddings"][-50:]
+        
         centroid = np.mean(entry["embeddings"], axis=0)
         ncent = np.linalg.norm(centroid)
         if ncent > 0:
@@ -201,12 +207,12 @@ class RabbitConsumer(threading.Thread):
         return best_person_id, best_distance
 
 
-    async def process_face(self, user_id: int, camera_id: int, face: dict):
+    async def process_face(self, user_id: int, camera_id: int, face: FaceExtractedDTO):
 
-        embedding = face["embedding"]
-        quality = face["score"]
-        thumbnail = face["thumbnail"]
-        pose = face.get("pose", {})
+        embedding = face.embedding
+        quality = face.score
+        thumbnail = face.thumbnail
+        pose = face.pose
         now_iso = datetime.datetime.utcnow().isoformat()
 
         # Asegurar que el índice del usuario está cargado
@@ -238,7 +244,10 @@ class RabbitConsumer(threading.Thread):
                 tags=[],
                 riskLevel=RiskLevel.UNKNOWN,
                 metadata={"seenCount": 1, "unknown": True},
-                embeddings=[emb_dto],
+                embeddings={
+                    "manual": [],
+                    "auto": [emb_dto]
+                },
             )
 
             new_id = await self._person_service.create(dto=p_unknown)
@@ -336,7 +345,7 @@ class RabbitConsumer(threading.Thread):
 
                 frame_b64 = msg["frame"]
                 camera_id = msg["camera_id"]
-                user_id = msg.get("user_id", 0)
+                user_id = msg["user_id"]
 
                 frame_bytes = base64.b64decode(frame_b64)
                 arr = np.frombuffer(frame_bytes, np.uint8)
@@ -352,11 +361,7 @@ class RabbitConsumer(threading.Thread):
                     len(faces), camera_id
                 )
 
-                for idx, face in enumerate(faces):
-                    logger.debug(
-                        "Procesando rostro %s/%s (score=%.3f)",
-                        idx + 1, len(faces), face["score"]
-                    )
+                for face in faces:
                     self.main_loop.call_soon_threadsafe(
                         asyncio.create_task,
                         self.process_face(

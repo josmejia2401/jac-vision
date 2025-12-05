@@ -23,6 +23,8 @@ class PersonRepository:
             new_id = generate_unique_number()
             doc["_id"] = new_id
             doc.pop("id", None)
+            doc.setdefault("embeddings", {"manual": [], "auto": []})
+            
             await self.col.insert_one(doc)
             logger.info(f"Registro creada con ID={new_id}")
             return new_id
@@ -82,32 +84,84 @@ class PersonRepository:
 
     async def add_embedding(self, person_id: int, embedding: FaceEmbeddingDTO) -> Optional[FaceEmbeddingDTO]:
         embedding.id = generate_unique_number()
-        result = await self.col.update_one(
-            {"_id": person_id},
-            {"$push": {"embeddings": asdict(embedding)}}
-        )
-        if not result:
+        emb_dict = asdict(embedding)
+
+        if embedding.source == FaceSource.MANUAL_UPLOAD:
+            update = {
+                "$push": {
+                    "embeddings.manual": emb_dict
+                }
+            }
+        else:
+            update = {
+                "$push": {
+                    "embeddings.auto": {
+                        "$each": [emb_dict],
+                        "$slice": -50   # solo últimos 50 automáticos
+                    }
+                }
+            }
+
+        result = await self.col.update_one({"_id": person_id}, update)
+        if result.modified_count == 0:
             return None
         return embedding
-    
-    async def add_embeddings(self, person_id: int, embeddings: list[FaceEmbeddingDTO]) -> Optional[List[FaceEmbeddingDTO]]:
+
+
+    async def add_embeddings(self, person_id: int, embeddings: List[FaceEmbeddingDTO]) -> Optional[List[FaceEmbeddingDTO]]:
+        manual_list = []
+        auto_list = []
+
         for emb in embeddings:
             emb.id = generate_unique_number()
-        payload = [asdict(emb) for emb in embeddings]
-        result = await self.col.update_one(
-            {"_id": person_id},
-            {"$push": {"embeddings": {"$each": payload}}}
-        )
+            if emb.source == FaceSource.MANUAL_UPLOAD:
+                manual_list.append(asdict(emb))
+            else:
+                auto_list.append(asdict(emb))
 
-        if not result:
-            return None
+        updates = {}
 
+        if manual_list:
+            updates.setdefault("$push", {})["embeddings.manual"] = {
+                "$each": manual_list
+            }
+
+        if auto_list:
+            updates.setdefault("$push", {})["embeddings.auto"] = {
+                "$each": auto_list,
+                "$slice": -50
+            }
+
+        if not updates:
+            return embeddings
+
+        await self.col.update_one({"_id": person_id}, updates)
         return embeddings
 
+
     def _to_dto(self, doc) -> PersonDTO:
-        embeddings = []
-        for e in doc.get("embeddings", []):
-            embeddings.append(
+
+        emb_manual = []
+        emb_auto = []
+
+        emb_doc = doc.get("embeddings", {"manual": [], "auto": []})
+
+        for e in emb_doc.get("manual", []):
+            emb_manual.append(
+                FaceEmbeddingDTO(
+                    id=e.get("id"),
+                    embedding=e.get("embedding", []),
+                    source=FaceSource(e.get("source", FaceSource.MANUAL_UPLOAD.value)),
+                    cameraId=e.get("cameraId"),
+                    createdAt=e.get("createdAt"),
+                    qualityScore=e.get("qualityScore", 0.0),
+                    thumbnail=e.get("thumbnail"),
+                    metadata=e.get("metadata", {})
+                )
+            )
+
+        for e in emb_doc.get("auto", []):
+            emb_auto.append(
                 FaceEmbeddingDTO(
                     id=e.get("id"),
                     embedding=e.get("embedding", []),
@@ -116,7 +170,7 @@ class PersonRepository:
                     createdAt=e.get("createdAt"),
                     qualityScore=e.get("qualityScore", 0.0),
                     thumbnail=e.get("thumbnail"),
-                    metadata=e.get("metadata", {}),
+                    metadata=e.get("metadata", {})
                 )
             )
 
@@ -124,8 +178,11 @@ class PersonRepository:
             id=doc["_id"],
             userId=doc["userId"],
             displayName=doc["displayName"],
-            tags=doc.get("tags", []),
+            tags=doc["tags"],
             riskLevel=RiskLevel(doc["riskLevel"]),
-            metadata=doc.get("metadata", {}),
-            embeddings=embeddings,
+            metadata=doc["metadata"],
+            embeddings={
+                "manual": emb_manual,
+                "auto": emb_auto
+            }
         )

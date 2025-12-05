@@ -54,25 +54,21 @@ class FaceEngine:
             emb = face.normed_embedding.tolist()
             score = float(face.det_score)
             thumbnail_b64 = self._create_thumbnail(frame_bgr, bbox)
-            pose: PoseDTO = {}
+            pose = None
             try:
                 if hasattr(face, "pose") and face.pose is not None:
                     yaw, pitch, roll = face.pose
-                    pose = {
-                        "yaw": float(yaw),
-                        "pitch": float(pitch),
-                        "roll": float(roll),
-                    }
+                    pose = PoseDTO(
+                        yaw=float(yaw),
+                        pitch=float(pitch),
+                        roll=float(roll)
+                    )
             except Exception as e:
                 logger.warning(f"Error extrayendo pose del rostro: {e}")
-
-            results.append({
-                "embedding": emb,
-                "bbox": bbox,
-                "score": score,
-                "thumbnail": thumbnail_b64,
-                "pose": pose
-            })
+            
+            logger.debug(f"Raw face.pose => {getattr(face, 'pose', None)}")
+            
+            results.append(FaceExtractedDTO(score=score, pose=pose, bbox=bbox, embedding=emb, thumbnail=thumbnail_b64))
         return results
 
 

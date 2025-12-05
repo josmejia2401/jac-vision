@@ -52,7 +52,6 @@ class FaceRecognitionRabbitManager:
             return
         logger.info("Stopping consumer for camera %s …", req.cameraId)
         self._safe_stop(consumer)
-        del self.consumers[req.cameraId]
         logger.info("Consumer for camera %s stopped.", req.cameraId)
 
     def restart(self, req: ApiReqDTO):
