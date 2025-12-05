@@ -62,6 +62,7 @@ build/
 # -------------------------
 # CAMERA RECORDINGS / VIDEO OUTPUT
 # -------------------------
+storage/
 videos/
 output/
 tmp/
