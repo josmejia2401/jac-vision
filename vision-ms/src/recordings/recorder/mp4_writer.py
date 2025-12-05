@@ -14,7 +14,7 @@ class MP4Writer:
         self.path = None
 
     def open(self, width: int, height: int, fps: int) -> str:
-        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
         date_path = datetime.utcnow().strftime("%Y/%m/%d")
         folder = os.path.join(root, self.base_path, str(self.camera_id), date_path)
         os.makedirs(folder, exist_ok=True)
