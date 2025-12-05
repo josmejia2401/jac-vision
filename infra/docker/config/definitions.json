@@ -1,0 +1,53 @@
+{
+    "users": [
+      {
+        "name": "admin",
+        "password": "admin123",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator"
+      }
+    ],
+    "vhosts": [
+      {
+        "name": "/"
+      }
+    ],
+    "permissions": [
+      {
+        "user": "admin",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }
+    ],
+    "topic_permissions": [],
+    "parameters": [],
+    "policies": [
+      {
+        "vhost": "/",
+        "name": "limit-queues",
+        "pattern": ".*",
+        "definition": {
+          "max-length": 5000,
+          "overflow": "drop-head"
+        },
+        "priority": 1,
+        "apply-to": "queues"
+      }
+    ],
+    "queues": [],
+    "exchanges": [
+      {
+        "name": "camera.frames",
+        "vhost": "/",
+        "type": "topic",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      }
+    ],
+    "bindings": []
+  }
+  

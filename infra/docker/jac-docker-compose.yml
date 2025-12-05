@@ -1,0 +1,93 @@
+#version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: unless-stopped
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASS:-admin123}
+      RABBITMQ_DEFAULT_VHOST: ${RABBIT_VHOST:-/}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./config/definitions.json:/etc/rabbitmq/definitions.json:ro
+
+    networks:
+      - jac-net
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+          #cpus: "1.0"
+          #memory: 1G
+        reservations:
+          memory: 256M
+          cpus: "0.1"
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+
+    ports:
+      - "6379:6379"
+
+    environment:
+      REDIS_REPLICATION_MODE: master
+
+    volumes:
+      - redis_data:/data
+
+    networks:
+      - jac-net
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 128M
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  rabbitmq_data:
+  redis_data:
+
+networks:
+  jac-net:
+    driver: bridge
+    name: jac-net
+    internal: false
+    driver_opts:
+      com.docker.network.bridge.name: "jac-br"

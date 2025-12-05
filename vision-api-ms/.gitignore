@@ -1,0 +1,106 @@
+# ============================================
+# Node.js .gitignore
+# ============================================
+
+# Logs
+logs
+*.log
+*/logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment files
+.env
+.env.*        # .env.development, .env.production, etc.
+!.env.example # mantén un ejemplo para referencia
+
+# Node modules
+node_modules/
+package-lock.json
+storage/logs
+
+# Build directories
+dist/
+build/
+coverage/
+.cache/
+.nyc_output/
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+.eslintcache
+
+# Logs from parcel, vite, webpack, etc.
+.parcel-cache/
+.vite/
+vite.config.ts.timestamp*
+.vite-inspect/
+
+# Next.js (por si lo usas en el futuro)
+.next/
+out/
+
+# SvelteKit
+.svelte-kit/
+
+# Nuxt
+.nuxt/
+.output/
+
+# PM2 logs & dumps
+.pids
+pm2.log
+pm2.pid
+dump.pm2
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Yarn Berry
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# Prisma
+prisma/migrations-dev/
+prisma/*.db
+
+# Docker
+docker-data/
+*.tar
+
+# Testing outputs
+test-results/
+
+# Local certificates
+certs/
+*.pem
+*.key
+
+# Temporary files
+tmp/
+temp/

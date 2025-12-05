@@ -1,0 +1,37 @@
+{
+  "name": "vision-api-ms",
+  "version": "1.0.0",
+  "description": "Microservicio para gestión de APIs para JACVision",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "microservicio",
+    "nodejs",
+    "oauth2",
+    "mongodb",
+    "crud"
+  ],
+  "author": "José Mejía",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "mongoose": "^9.0.0",
+    "ioredis": "^5.8.2",
+    "express-session": "1.18.1",
+    "express-rate-limit": "7.5.0",
+    "jsonwebtoken": "9.0.2",
+    "dns": "0.2.2",
+    "compression": "1.8.1"
+  },
+  "devDependencies": {}
+}

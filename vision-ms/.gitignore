@@ -1,0 +1,110 @@
+# -------------------------
+# PYTHON
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.so
+
+# -------------------------
+# VIRTUAL ENV
+# -------------------------
+.venv/
+venv/
+env/
+
+# -------------------------
+# EDITORS
+# -------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -------------------------
+# ENV / CONFIG SENSIBLE
+# -------------------------
+.env
+*.env
+.env.*
+config/local_settings.yml
+config/settings.local.yml
+config/*.local.yml
+
+# -------------------------
+# LOGS
+# -------------------------
+logs/
+*.log
+
+# -------------------------
+# CACHE
+# -------------------------
+.cache/
+.eggs/
+*.egg-info/
+dist/
+build/
+
+# -------------------------
+# MODEL FILES (InsightFace, ONNX, etc)
+# -------------------------
+/Users/*/.insightface/
+/root/.insightface/
+.insightface/
+models/
+*.onnx
+
+# -------------------------
+# CAMERA RECORDINGS / VIDEO OUTPUT
+# -------------------------
+recordings/
+videos/
+output/
+tmp/
+*.mp4
+*.ts
+*.m3u8
+*.jpg
+
+# -------------------------
+# RABBITMQ TEMP
+# -------------------------
+*.pid
+*.sock
+
+# -------------------------
+# MONGODB DUMPS
+# -------------------------
+dump/
+*.bson
+*.metadata.json
+
+# -------------------------
+# DOCKER
+# -------------------------
+docker-compose.override.yml
+*.tar
+
+# -------------------------
+# MACOS
+# -------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# -------------------------
+# PYCHARM EXTRA
+# -------------------------
+*.iml
+
+# -------------------------
+# TESTS / COVERAGE
+# -------------------------
+.coverage
+htmlcov/
+pytest_cache/
