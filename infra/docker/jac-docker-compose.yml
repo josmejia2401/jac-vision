@@ -20,7 +20,7 @@ services:
 
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-      - ./config/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./docker/config/definitions.json:/etc/rabbitmq/definitions.json:ro
 
     networks:
       - jac-net

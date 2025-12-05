@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
 from ...helpers.utils.enums import RiskLevel, FaceSource
+import datetime
 
 @dataclass
 class PoseDTO:
@@ -22,19 +23,19 @@ class FaceEmbeddingDTO:
     embedding: list[float]
     source: FaceSource
     cameraId: Optional[int]
-    createdAt: str
-    qualityScore: float
+    qualityScore: Optional[float]
     pose: Optional[PoseDTO] = None
     thumbnail: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    createdAt: datetime.datetime = field(default_factory=lambda: datetime.datetime.utcnow())
 
 @dataclass
 class PersonDTO:
     id: Optional[int]
-    userId: int
-    displayName: str
+    userId: Optional[int]
+    displayName: Optional[str]
     tags: Optional[List[str]]
     riskLevel: RiskLevel
     metadata: Dict[str, Any] = field(default_factory=dict)
     embeddings: List[FaceEmbeddingDTO] = field(default_factory=list)
-    createdAt: str
+    createdAt: datetime.datetime = field(default_factory=lambda: datetime.datetime.utcnow())

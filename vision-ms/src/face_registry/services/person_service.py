@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 import numpy as np
 import datetime
@@ -60,7 +61,6 @@ class PersonService:
 
     async def add_embeddings_from_bytes(self, person_id: int, file_bytes: bytes):
         logger.info("Procesando imagen para embeddings de persona ID=%s", person_id)
-        # Verificar existencia de persona
         person = await self._repo.get(person_id)
         if not person:
             logger.error("Persona %s no existe — no se pueden agregar embeddings", person_id)

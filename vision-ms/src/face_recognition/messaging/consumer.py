@@ -1,3 +1,4 @@
+from __future__ import annotations
 import base64
 import json
 import logging
@@ -20,11 +21,12 @@ logger = logging.getLogger(__name__)
 
 class RabbitConsumer(threading.Thread):
 
-    def __init__(self, camera_id: int, db: AsyncIOMotorDatabase, face_engine: FaceEngine):
+    def __init__(self, camera_id: int, db: AsyncIOMotorDatabase, face_engine: FaceEngine, main_loop: asyncio.AbstractEventLoop):
         super().__init__(daemon=True)
         self.camera_id = camera_id
         # Face engine
         self._face_engine = face_engine
+        self.main_loop: asyncio.AbstractEventLoop = main_loop
         # Servicio de personas
         self._person_service = PersonService(db=db, engine=self._face_engine)
         # Flag de parada del thread
@@ -40,7 +42,6 @@ class RabbitConsumer(threading.Thread):
         self.RISK_NOTIFY_LEVELS = {RiskLevel.DANGEROUS, RiskLevel.HIGH}
         # "Modelo" en memoria: { userId: { personId: {centroid, embeddings[], risk} } }
         self.embedding_index: Dict[int, Dict[int, Dict]] = {}
-        self.loop = asyncio.new_event_loop()
 
     def stop(self):
         self._stop_flag.set()
@@ -311,8 +312,6 @@ class RabbitConsumer(threading.Thread):
         logger.info("FaceIdentificationConsumer started for camera %s", self.camera_id)
         self.connect()
         
-        threading.Thread(target=self.loop.run_forever, daemon=True).start()
-
         queue_name = f"vision.face.detected.{self.camera_id}"
 
         self._channel.exchange_declare(
@@ -336,8 +335,8 @@ class RabbitConsumer(threading.Thread):
                 msg = json.loads(body)
 
                 frame_b64 = msg["frame"]
-                camera_id = msg["cameraId"]
-                user_id = msg.get("userId", 0)
+                camera_id = msg["camera_id"]
+                user_id = msg.get("user_id", 0)
 
                 frame_bytes = base64.b64decode(frame_b64)
                 arr = np.frombuffer(frame_bytes, np.uint8)
@@ -358,8 +357,14 @@ class RabbitConsumer(threading.Thread):
                         "Procesando rostro %s/%s (score=%.3f)",
                         idx + 1, len(faces), face["score"]
                     )
-                    future = asyncio.run_coroutine_threadsafe(self.process_face(user_id=user_id, camera_id=camera_id, face=face), self.loop)
-                    future.result()
+                    self.main_loop.call_soon_threadsafe(
+                        asyncio.create_task,
+                        self.process_face(
+                            user_id=user_id,
+                            camera_id=camera_id,
+                            face=face
+                        )
+                    )
                 ch.basic_ack(delivery_tag=method.delivery_tag)
             except Exception as e:
                 logger.exception(

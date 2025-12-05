@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import logging
 import threading
 from typing import Dict
@@ -9,29 +8,18 @@ from ...helpers.constants.constants import constants
 
 logger = logging.getLogger(__name__)
 
-
 class CameraManager:
-    """Administra múltiples CameraWorker (uno por cámara). Maneja inicio, parada y estado."""
 
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._workers: Dict[int, CameraWorker] = {}
         self._rtsp_urls: Dict[int, str] = {}
-
         logger.info("CameraManager initialized")
 
-
-    def start_camera(self, camera_id: int, user_id: int, rtsp_url: str ) -> None:
-
-        logger.debug(
-            "Request to START camera '%s' with RTSP='%s', user_id=%s",
-            camera_id, rtsp_url, user_id
-        )
+    def start_camera(self, camera_id: int, user_id: int, rtsp_url: str) -> None:
+        logger.debug("Request to START camera '%s' with RTSP='%s', user_id=%s", camera_id, rtsp_url, user_id)
 
         with self._lock:
-            if not camera_id or not isinstance(camera_id, int):
-                logger.error("Invalid camera_id: %s", camera_id)
-                raise ValueError("camera_id must be a non-empty string")
 
             if not rtsp_url.startswith("rtsp://"):
                 logger.warning("RTSP URL may be invalid: %s", rtsp_url)
@@ -41,7 +29,7 @@ class CameraManager:
                 raise ValueError(f"Camera {camera_id} is already running")
 
             cfg = CameraConfig(
-                userId=user_id,
+                user_id=user_id,
                 camera_id=camera_id,
                 rtsp_url=rtsp_url,
                 amqp_url=constants["AMQP_URL"],
@@ -92,6 +80,10 @@ class CameraManager:
 
         logger.debug("CameraManager status requested: %s", status)
         return status
+    
+    def restart_camera(self, camera_id: str) -> None:
+        self.stop_camera(camera_id=camera_id)
+        self.start_camera(camera_id=camera_id)
 
     def stop_all(self) -> None:
         logger.info("Request received to STOP ALL cameras.")

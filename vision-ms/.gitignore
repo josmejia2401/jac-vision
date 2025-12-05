@@ -61,7 +61,6 @@ models/
 # -------------------------
 # CAMERA RECORDINGS / VIDEO OUTPUT
 # -------------------------
-recordings/
 videos/
 output/
 tmp/

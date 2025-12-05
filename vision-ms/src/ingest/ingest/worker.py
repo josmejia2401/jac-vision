@@ -127,8 +127,8 @@ class CameraWorker(threading.Thread):
     
     def _build_payload(self, camera_id, timestamp, frame_b64, fps, width, height):
         return {
-            "cameraId": camera_id,
-            "userId": self.config.userId,
+            "camera_id": camera_id,
+            "user_id": self.config.user_id,
             "timestamp": timestamp,
             "frame": frame_b64,
             "fps": fps,

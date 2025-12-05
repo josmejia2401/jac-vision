@@ -20,7 +20,8 @@ pids
 
 # dotenv environment files
 .env
-.env.*        # .env.development, .env.production, etc.
+.env.*        
+# .env.development, .env.production, etc.
 !.env.example # mantén un ejemplo para referencia
 
 # Node modules

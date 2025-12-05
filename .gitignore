@@ -57,13 +57,11 @@ build/
 /Users/*/.insightface/
 /root/.insightface/
 .insightface/
-models/
 *.onnx
 
 # -------------------------
 # CAMERA RECORDINGS / VIDEO OUTPUT
 # -------------------------
-recordings/
 videos/
 output/
 tmp/
