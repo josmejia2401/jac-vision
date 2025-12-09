@@ -36,6 +36,8 @@ class CameraManager:
                 exchange=constants["AMQP_EXCHANGE"],
                 jpeg_quality=constants["INGEST_JPEG_QUALITY"],
                 reconnect_delay_seconds=constants["INGEST_RECONNECT_DELAY_SECONDS"],
+                frame_width=constants["INGEST_VIDEO_WIDTH"],
+                frame_height=constants["INGEST_VIDEO_HEIGHT"]
             )
 
             logger.debug("CameraConfig generated: %s", cfg)

@@ -10,4 +10,7 @@ class CameraConfig:
     exchange: str
     jpeg_quality: int
     reconnect_delay_seconds: int
+    frame_width: int
+    frame_height: int
+    
     

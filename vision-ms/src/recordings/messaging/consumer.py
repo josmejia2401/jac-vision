@@ -72,9 +72,6 @@ class VideoConsumer(threading.Thread):
             queue=queue_name,
             routing_key=f"camera.{self.camera_id}",
         )
-        
-        #self.loop = asyncio.new_event_loop()
-        #asyncio.set_event_loop(self.loop)
 
         def callback(ch, method, properties, body):
             if self._stop_flag.is_set():
@@ -113,8 +110,6 @@ class VideoConsumer(threading.Thread):
                         createdAt=event["created_at"],
                     )
                     try:
-                        #asyncio.run( self._recordings_service.create(recording))
-                        #self.loop.run_until_complete(self._recordings_service.create(recording))
                         self._main_loop.call_soon_threadsafe(
                             asyncio.create_task,
                             self._recordings_service.create(recording)

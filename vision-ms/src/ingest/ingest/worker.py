@@ -4,8 +4,10 @@ import logging
 import threading
 import time
 import cv2
+import numpy as np
 from ..publishers.publisher import RabbitPublisher
 from ..dto.ingest_dto import CameraConfig
+from ...helpers.constants.constants import constants
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +62,7 @@ class CameraWorker(threading.Thread):
                     time.sleep(self.config.reconnect_delay_seconds)
                     continue
 
-                frame_b64 = self._encode_frame(frame)
+                frame_b64, frame = self.resize_compress_and_decode(frame, width, height)
                 if not frame_b64:
                     continue
 
@@ -116,14 +118,7 @@ class CameraWorker(threading.Thread):
                 height, width = frame.shape[:2]
 
         return fps, width, height
-    
-    def _encode_frame(self, frame):
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), int(self.config.jpeg_quality)]
-        success, buf = cv2.imencode(".jpg", frame, encode_param)
-        if not success:
-            logger.warning("JPEG encode failed for camera %s", self.config.camera_id)
-            return None
-        return base64.b64encode(buf).decode("utf-8")
+
     
     def _build_payload(self, camera_id, timestamp, frame_b64, fps, width, height):
         return {
@@ -135,7 +130,26 @@ class CameraWorker(threading.Thread):
             "width": width,
             "height": height
         }
-
+    
+    def jpeg_to_frame(self, jpeg_bytes: bytes):
+        np_buffer = np.frombuffer(jpeg_bytes, dtype=np.uint8)
+        frame = cv2.imdecode(np_buffer, cv2.IMREAD_COLOR)
+        return frame
+    
+    def resize_compress_and_decode(self, frame, width, height):
+        if width > self.config.frame_width:
+            width = self.config.frame_width
+        if height > self.config.frame_height:
+            height = self.config.frame_height
+            
+        resized = cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
+        ok, encoded = cv2.imencode(".jpg", resized, [cv2.IMWRITE_JPEG_QUALITY, self.config.jpeg_quality])
+        if not ok:
+            raise RuntimeError("Error al comprimir")
+        jpeg_bytes = encoded.tobytes()
+        frame_decoded = self.jpeg_to_frame(jpeg_bytes)
+        jpeg_bytes = base64.b64encode(jpeg_bytes).decode("utf-8")
+        return jpeg_bytes, frame_decoded
 
 
 
