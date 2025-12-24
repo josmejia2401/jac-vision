@@ -14,7 +14,12 @@ const STATUS = Object.freeze({
   SYSTEM_HEALTHY: { id: 8, category: "system", code: "healthy", name: "Saludable", description: "Sistema operando normalmente", isActive: true },
   SYSTEM_DEGRADED: { id: 9, category: "system", code: "degraded", name: "Degradado", description: "Rendimiento degradado / parcial", isActive: true },
   SYSTEM_MAINTENANCE: { id: 10, category: "system", code: "maintenance", name: "Mantenimiento", description: "Mantenimiento programado", isActive: true },
-  SYSTEM_OFFLINE: { id: 11, category: "system", code: "offline", name: "Offline", description: "Sistema fuera de servicio", isActive: false }
+  SYSTEM_OFFLINE: { id: 11, category: "system", code: "offline", name: "Offline", description: "Sistema fuera de servicio", isActive: false },
+
+  // General
+  ACTIVE: { id: 12, category: "general", code: "active", name: "Activo", description: "Sistema fuera de servicio", isActive: true },
+  INACTIVE: { id: 13, category: "general", code: "inactive", name: "Inactivo", description: "Sistema fuera de servicio", isActive: true },
+  DELETED: { id: 14, category: "general", code: "deleted", name: "Elimnado", description: "Sistema fuera de servicio", isActive: true },
 });
 
 module.exports = {

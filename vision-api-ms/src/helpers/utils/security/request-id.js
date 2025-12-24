@@ -1,7 +1,7 @@
 const { UniqueNumberUtil } = require("./unique-number.util");
 
 const ALLOWED_ORIGINS = [
-    'http://localhost:3005',
+    'http://localhost:5173',
     'http://127.0.0.1:3005',
     'https://questionask-app.jac-box.com',
     'https://questionask.jac-box.com',
@@ -10,8 +10,7 @@ const ALLOWED_ORIGINS = [
     'https://*.jac-box.com'
 ];
 const LOCAL_ORIGINS = [
-    'http://localhost:3005',
-    'http://127.0.0.1:3005'
+    '*'
 ];
 const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 const ALLOWED_HEADERS = [
@@ -24,7 +23,8 @@ const ALLOWED_HEADERS = [
     'Access-Control-Request-Method',
     'Access-Control-Request-Headers',
     'User-Agent',
-    'X-Request-ID'
+    'X-Request-ID',
+    'audience'
 ];
 
 function matchOrigin(origin, allowedOrigin) {

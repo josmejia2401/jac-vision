@@ -46,7 +46,7 @@ class MongoDBClient {
 
         try {
             // DNS personalizado para evitar SRV/TXT fallidos
-            dns.setServers(["8.8.8.8", "1.1.1.1"]);
+            //dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
             this.mongoose = await mongoose.connect(this.MONGO_URI, {
                 serverSelectionTimeoutMS: 10000,
@@ -61,7 +61,7 @@ class MongoDBClient {
             });
 
             this.ready = true;
-            this.logger.info("MongoDB listo para usar");
+            this.logger.info("MongoDB listo para usar", this.MONGO_URI);
             return true;
 
         } catch (error) {

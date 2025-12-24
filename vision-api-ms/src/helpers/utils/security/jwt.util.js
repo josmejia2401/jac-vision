@@ -7,13 +7,13 @@ class JWTUtil {
         return String(token).replace(/^Bearer\s+/i, "");
     }
 
-    static sign({ role, subject, userId, tokenId, username }) {
+    static sign({ role, subject, userId, tokenId, username, audience }) {
         const options = {
             expiresIn: constants.JWT_TOKEN_LIFE,
             algorithm: "HS256",
-            audience: constants.APP_NAME,
+            audience: audience || "web",
             subject: subject,
-            jwtid: tokenId,
+            jwtid: String(tokenId),
             issuer: constants.APP_NAME,
         };
         const token = jwt.sign(
@@ -32,7 +32,7 @@ class JWTUtil {
     static validate(token, expectedAudience) {
         const rawToken = this.stripBearer(token);
         return jwt.verify(rawToken, constants.JWT_SECRET_VALUE, {
-            audience: expectedAudience || constants.APP_NAME,
+            audience: expectedAudience || "web",
             algorithms: ["HS256"]
         });
     }

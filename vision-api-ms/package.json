@@ -1,7 +1,7 @@
 {
   "name": "vision-api-ms",
   "version": "1.0.0",
-  "description": "Microservicio para gestión de APIs para JACVision",
+  "description": "Microservicio para gestión de APIs para JAC",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

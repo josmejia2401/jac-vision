@@ -1,13 +1,14 @@
 const { redis } = require("../../config/redis");
-const { TokenModel }  = require("../../models/token.model");
-const { getRequestLogger }  = require("../utils/logger/request-logger");
-const { JWTUtil }  = require("../utils/security/jwt.util");
+const { TokenModel } = require("../../core/models/token.model");
+const { getRequestLogger } = require("../utils/logger/request-logger");
+const { JWTUtil } = require("../utils/security/jwt.util");
 
 const authMiddleware = async (req, res, next) => {
   const logger = getRequestLogger(req.requestId);
 
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
+    const expectedAudience = req.headers.audience || req.headers.Audience;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       logger.warn("Token no proporcionado en header Authorization");
@@ -22,7 +23,7 @@ const authMiddleware = async (req, res, next) => {
 
     let payload;
     try {
-      payload = JWTUtil.validate(rawToken);
+      payload = JWTUtil.validate(rawToken, expectedAudience);
       logger.info(`JWT validado correctamente | jti=${payload.jti}`);
     } catch (err) {
       logger.warn("Firma JWT inválida", { error: err.message });
@@ -85,7 +86,7 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    await redis.set(cacheKey, JSON.stringify(tokenDoc), { EX: 600 });
+    await redis.set(cacheKey, JSON.stringify(tokenDoc), 'EX', 600);
 
     req.auth = {
       tokenId: tokenDoc._id,
