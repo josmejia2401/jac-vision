@@ -1,0 +1,155 @@
+/* =========================================================
+   Bootstrap 5.3 Theme – ControlMed (Modern Medical)
+   ========================================================= */
+
+:root {
+   /* ======================================================
+        BRAND COLORS
+        ====================================================== */
+
+   /* Primary – Azul petróleo (profesional, médico) */
+   --bs-primary: #2563EB;
+   --bs-primary-rgb: 37, 99, 235;
+
+   /* Secondary – Verde salvia */
+   --bs-secondary: #5FAE9C;
+   --bs-secondary-rgb: 95, 174, 156;
+
+   /* Success – Verde limpio */
+   --bs-success: #16A34A;
+   --bs-success-rgb: 22, 163, 74;
+
+   /* Info – Azul médico claro */
+   --bs-info: #38BDF8;
+   --bs-info-rgb: 56, 189, 248;
+
+   /* Warning – Ámbar suave */
+   --bs-warning: #F59E0B;
+   --bs-warning-rgb: 245, 158, 11;
+
+   /* Danger – Rojo sobrio */
+   --bs-danger: #DC2626;
+   --bs-danger-rgb: 220, 38, 38;
+
+   --bs-light: #F9FAFB;
+   --bs-dark: #111827;
+
+   /* ======================================================
+        BACKGROUND & SURFACES
+        ====================================================== */
+
+   --bs-body-bg: #F5F7FB;
+   --bs-body-color: #1F2937;
+
+   --bs-card-bg: #FFFFFF;
+   --bs-modal-bg: #FFFFFF;
+   --bs-dropdown-bg: #FFFFFF;
+   --bs-popover-bg: #FFFFFF;
+
+   --bs-secondary-bg: #F1F5F9;
+   --bs-tertiary-bg: #EAF0F6;
+
+   /* ======================================================
+        TEXT
+        ====================================================== */
+
+   --bs-heading-color: #0F172A;
+   --bs-secondary-color: #6B7280;
+   --bs-tertiary-color: #94A3B8;
+
+   --bs-link-color: var(--bs-primary);
+   --bs-link-hover-color: #1D4ED8;
+
+   /* ======================================================
+        BORDERS & RADIUS
+        ====================================================== */
+
+   --bs-border-color: #E5E7EB;
+   --bs-border-color-translucent: rgba(0, 0, 0, 0.06);
+
+   --bs-border-radius: 0.75rem;
+   /* 12px */
+   --bs-border-radius-sm: 0.5rem;
+   --bs-border-radius-lg: 1rem;
+   --bs-border-radius-xl: 1.25rem;
+
+   /* ======================================================
+        FORMS & INPUTS
+        ====================================================== */
+
+   --bs-input-bg: #FFFFFF;
+   --bs-input-color: #0F172A;
+   --bs-input-border-color: #CBD5E1;
+
+   --bs-input-focus-border-color: var(--bs-primary);
+   --bs-input-focus-color: #0F172A;
+   --bs-input-focus-box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+
+   --bs-input-placeholder-color: #94A3B8;
+   --bs-input-disabled-bg: #F1F5F9;
+
+   /* ======================================================
+        CHECKBOX & RADIO
+        ====================================================== */
+
+   --bs-form-check-input-checked-color: #FFFFFF;
+   --bs-form-check-input-checked-bg-color: var(--bs-primary);
+   --bs-form-check-input-checked-border-color: var(--bs-primary);
+
+   --bs-form-check-input-focus-border: var(--bs-primary);
+   --bs-form-check-input-focus-box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+
+   /* ======================================================
+        BUTTONS
+        ====================================================== */
+
+   --bs-btn-font-weight: 600;
+
+   --bs-btn-border-radius: var(--bs-border-radius);
+   --bs-btn-border-radius-sm: var(--bs-border-radius-sm);
+   --bs-btn-border-radius-lg: var(--bs-border-radius-lg);
+
+   --bs-btn-focus-box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.35);
+
+   /* Primary button */
+   --bs-btn-bg: var(--bs-primary);
+   --bs-btn-border-color: var(--bs-primary);
+   --bs-btn-hover-bg: #1D4ED8;
+   --bs-btn-hover-border-color: #1D4ED8;
+   --bs-btn-active-bg: #1E40AF;
+   --bs-btn-active-border-color: #1E40AF;
+
+   /* ======================================================
+        ALERTS, BADGES, TOASTS
+        ====================================================== */
+
+   --bs-alert-bg-scale: -80%;
+   --bs-alert-border-scale: -70%;
+   --bs-alert-color-scale: 20%;
+
+   --bs-badge-font-weight: 600;
+
+   /* ======================================================
+        NAVBAR
+        ====================================================== */
+
+   --bs-navbar-padding-y: 0.75rem;
+   --bs-navbar-color: #475569;
+   --bs-navbar-hover-color: var(--bs-primary);
+   --bs-navbar-active-color: var(--bs-primary);
+
+   /* ======================================================
+        SHADOWS
+        ====================================================== */
+
+   --bs-box-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+   --bs-box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+   --bs-box-shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+
+/* OVERRIDE */
+
+.text-secondary {
+   color: var(--bs-secondary-color) !important;
+}
